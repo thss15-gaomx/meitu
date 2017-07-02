@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% block content %}
+
+<div class="row">
+  {% for pic in pictures %}
+	<div class="col-sm-6 col-md-3">
+		<div class="thumbnail">
+			<img src="{{ pic.content.url }}" >
+			<div class="caption">
+        <a href="{% url 'gra' %}"><button type="submit" class="btn btn-primary">灰度图</button></a>
+        <a href="{% url 'bin' %}"><button type="submit" class="btn btn-success">二值化</button></a>
+        <a href="{% url 'gau' %}"><button type="submit" class="btn btn-info">高斯平滑</button></a>
+        <a href="{% url 'sca' %}"><button type="submit" class="btn btn-warning">图片缩放</button></a>
+        <a href="{% url 'rot' %}"><button type="submit" class="btn btn-danger">图片旋转</button></a>
+				<h3>{{pic.name}}</h3>
+				<p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+{% endblock %}

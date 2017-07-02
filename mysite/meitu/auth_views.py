@@ -8,7 +8,8 @@ from .models import IMG
 def index(request):
     if not request.user.is_authenticated():
         return render(request, "login.html")
-    pictures = IMG.objects.all()
+    #pictures = IMG.objects.all()
+    pictures = IMG.objects.filter(author=request.user)
     cates = set()
     for c in pictures:
         cates.add(c.category)

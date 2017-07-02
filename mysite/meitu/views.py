@@ -9,16 +9,8 @@ from django.views.decorators.http import require_POST
 from django.http import HttpResponseRedirect, Http404, JsonResponse, HttpResponseForbidden, HttpResponse
 from django.core.files.base import ContentFile
 from .forms import UploadForm
-'''
-    def index(request):
-    posts=Post.objects.order_by('-created_at')
-    return render(request,'index.html',{'posts':posts})
-    '''
-'''
-    def show(request):
-    pictures=Picture.objects.order_by('-uploaded_at')
-    return render(request,'show.html',{'pictures':pictures})
-    '''
+
+
 def upload_img(request):
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
@@ -39,9 +31,57 @@ def upload_img(request):
 def search_img(request):
     return render(request,'search.html')
 
-def process_img(request):
-    return render(request,'process.html')
+def process(request, number):
+    pic = IMG.objects.filter(id=number)
+    return render(request, "process.html", {'pictures': pic})
+#return render(request,'process.html')
 
 def display(request, cate):
     pictures = IMG.objects.filter(category=cate)
-    return render(request, "display.html", {'pictures': pictures})
+    search_ori = True
+    search_gra = True
+    search_bin = True
+    search_gau = True
+    search_sca = True
+    search_rot = True
+    if request.method == 'POST':
+        search_name = request.POST.get('searchname')
+        if search_name:
+            pictures = IMG.objects.filter(category=cate, name=search_name)
+        search_ori = True if request.POST.get('inlineCheckbox1') else False
+        search_gra = True if request.POST.get('inlineCheckbox2') else False
+        search_bin = True if request.POST.get('inlineCheckbox3') else False
+        search_gau = True if request.POST.get('inlineCheckbox4') else False
+        search_sca = True if request.POST.get('inlineCheckbox5') else False
+        search_rot = True if request.POST.get('inlineCheckbox6') else False
+    return render(request, "display.html", {'pictures': pictures,
+                  'search_ori': search_ori, 'search_gra': search_gra, 'search_bin': search_bin,
+                  'search_gau': search_gau, 'search_sca': search_sca, 'search_rot': search_rot})
+
+def gra(request):
+    pic = IMG.objects.all()
+    return render(request, "process.html", {'pictures': pic})
+
+def bin(request):
+    pic = IMG.objects.all()
+    return render(request, "process.html", {'pictures': pic})
+
+def gau(request):
+    pic = IMG.objects.all()
+    return render(request, "process.html", {'pictures': pic})
+
+def sca(request):
+    pic = IMG.objects.all()
+    return render(request, "process.html", {'pictures': pic})
+
+def rot(request):
+    pic = IMG.objects.all()
+    return render(request, "process.html", {'pictures': pic})
+
+
+
+
+
+
+
+

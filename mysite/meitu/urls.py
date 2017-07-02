@@ -12,7 +12,12 @@ urlpatterns = [
     url(r'^logout$', auth_views.logout, name='logout'),
     url(r'^upload$', views.upload_img,name='upload'),
     url(r'^search$',views.search_img,name='search'),
-    url(r'^process$',views.process_img,name='process'),
+    url(r'^gra$',views.gra,name='gra'),
+    url(r'^bin$',views.bin,name='bin'),
+    url(r'^gau$',views.gau,name='gau'),
+    url(r'^sca$',views.sca,name='sca'),
+    url(r'^rot$',views.rot,name='rot'),
+    url(r'^process/([a-zA-Z0-9]*)$', views.process, name='process'),
     url(r'^display/([a-zA-Z0-9]*)$', views.display, name='display'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,14 +1,42 @@
 {% extends 'base.html' %}
 {% load bootstrap3 %}
 {% block content %}
-<div style="padding: 5px 0px 10px;">
-	<div class="input-group">
-		<input type="text" class="form-control" placeholder="图片名称">
-		<span class="input-group-addon btn btn-primary">搜索</span>
+
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+  <div class="form-group">
+    <div class="row" style="padding: 5px 0px 10px;">
+	    <div class="col-lg-5"><input type="text" class="form-control input" name="searchname" placeholder="图片名称"></div>
+		<button type="submit" class="btn btn-default ">搜索</button>
 	</div>
-</div>
+	<div>
+        <label for="name">图片类型</label>
+	    <label class="checkbox-inline">
+		    <input type="checkbox" name="inlineCheckbox1" checked="checked" > 原图
+	    </label>
+	    <label class="checkbox-inline">
+			<input type="checkbox" name="inlineCheckbox2" checked="checked" > 灰度图
+		</label>
+		<label class="checkbox-inline">
+			<input type="checkbox" name="inlineCheckbox3" checked="checked" > 二值化
+		</label>
+		<label class="checkbox-inline">
+			<input type="checkbox" name="inlineCheckbox4" checked="checked" > 高斯平滑
+		</label>
+		<label class="checkbox-inline">
+			<input type="checkbox" name="inlineCheckbox5" checked="checked" > 缩放
+		</label>
+		<label class="checkbox-inline">
+			<input type="checkbox" name="inlineCheckbox6" checked="checked" > 旋转
+		</label>
+    </div>
+  </div>
+ </form>
+
 <div class="row">
      {% for pic in pictures %}
+	 {% if pic.is_ori == search_ori or pic.is_gra == search_gra or pic.is_bin == search_bin or pic.is_gau == search_gau or pic.is_sca == search_sca or pic.is_rot == search_rot %}
 	<div class="col-sm-6 col-md-3">
 		<div class="thumbnail">
 			<img src="{{ pic.content.url }}" >
@@ -18,6 +46,7 @@
 			</div>
 		</div>
 	</div>
+	{% endif %}
 	{% endfor %}
 </div>
 {% endblock %}
