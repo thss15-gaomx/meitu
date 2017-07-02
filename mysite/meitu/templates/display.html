@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% block content %}
+<div style="padding: 5px 0px 10px;">
+	<div class="input-group">
+		<input type="text" class="form-control" placeholder="图片名称">
+		<span class="input-group-addon btn btn-primary">搜索</span>
+	</div>
+</div>
+<div class="row">
+     {% for pic in pictures %}
+	<div class="col-sm-6 col-md-3">
+		<div class="thumbnail">
+			<img src="{{ pic.content.url }}" >
+			<div class="caption">
+				<h3>{{pic.name}}</h3>
+				<p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+{% endblock %}
