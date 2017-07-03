@@ -9,6 +9,7 @@ class IMG(models.Model):
     category=models.CharField(max_length=100)
     liked_num=models.IntegerField(default=0)
     uploaded_at=models.DateTimeField(default=timezone.now)
+    origin = models.IntegerField(default=1)
     is_ori=models.BooleanField(default=True)#是否是原图
     is_gra=models.BooleanField(default=False)#是否是灰度图
     is_bin=models.BooleanField(default=False)#是否二值化

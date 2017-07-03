@@ -36,17 +36,73 @@
 
 <div class="row">
      {% for pic in pictures %}
-	 {% if pic.is_ori == search_ori or pic.is_gra == search_gra or pic.is_bin == search_bin or pic.is_gau == search_gau or pic.is_sca == search_sca or pic.is_rot == search_rot %}
-	<div class="col-sm-6 col-md-3">
-		<div class="thumbnail">
+	 {% if pic.is_ori and search_ori %}
+	 <div class="col-sm-4 col-md-4">
+		<div class="thumbnail" style = "width:300px">
 			<img src="{{ pic.content.url }}" >
 			<div class="caption">
-				<h3>{{pic.name}}</h3>
+				<h3>{{pic.category}}</h3>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
 				<p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
 			</div>
 		</div>
 	</div>
-	{% endif %}
+	 {% elif pic.is_gra and search_gra %}
+	 <div class="col-sm-4 col-md-4">
+		<div class="thumbnail" style = "width:300px">
+			<img src="{{ pic.content.url }}" >
+			<div class="caption">
+				<h3>{{pic.category}}</h3>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
+				<p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
+			</div>
+		</div>
+	</div>
+	 {% elif pic.is_bin and search_bin %}
+	<div class="col-sm-4 col-md-4">
+		<div class="thumbnail" style = "width:300px">
+			<img src="{{ pic.content.url }}" >
+			<div class="caption">
+				<h3>{{pic.category}}</h3>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
+				<p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
+			</div>
+		</div>
+	</div>
+	 {% elif pic.is_gau and search_gau %}
+	<div class="col-sm-4 col-md-4">
+		<div class="thumbnail" style = "width:300px">
+			<img src="{{ pic.content.url }}" >
+			<div class="caption">
+				<h3>{{pic.category}}</h3>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
+				<p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
+			</div>
+		</div>
+	</div>
+	 {% elif pic.is_sca and search_sca %}
+	<div class="col-sm-4 col-md-4">
+		<div class="thumbnail" style = "width:300px">
+			<img src="{{ pic.content.url }}" >
+			<div class="caption">
+				<h3>{{pic.category}}</h3>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
+				<p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
+			</div>
+		</div>
+	</div>
+	 {% elif pic.is_rot and search_rot %}
+	<div class="col-sm-4 col-md-4">
+		<div class="thumbnail" style = "width:300px">
+			<img src="{{ pic.content.url }}" >
+			<div class="caption">
+				<h3>{{pic.category}}</h3>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
+				<p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
+			</div>
+		</div>
+	</div>
+	{% endif %} 
 	{% endfor %}
 </div>
 {% endblock %}
