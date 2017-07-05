@@ -1,11 +1,11 @@
 import os
 from django.shortcuts import render
 from itertools import chain
-from .models import IMG
+from .models import IMG, IMG_User, Like, Save, Invite
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_POST
 from django.http import HttpResponseRedirect, Http404, JsonResponse, HttpResponseForbidden, HttpResponse
 from django.core.files.base import ContentFile
@@ -58,7 +58,7 @@ def upload(request):
                 sca.is_ori = False
                 sca.is_sca = True
                 (x, y) = img_ori.size
-                img_sca = img_ori.resize((int(x/5), int(y/5)),Image.ANTIALIAS)
+                img_sca = img_ori.resize((int(x/2), int(y/2)),Image.ANTIALIAS)
                 img_sca.save('media/img/' + os.path.split(new_img.content.name)[-1] + 'sca.png')
                 sca.content = ImageFieldFile(sca, sca.content, 'img/' + os.path.split(new_img.content.name)[-1] + 'sca.png')
                 sca.save()
@@ -108,31 +108,46 @@ def upload(request):
                 gau.origin = new_img.id
                 gau.is_ori = False
                 gau.is_gau = True
-                img_gau = img_ori.filter(MyGaussianBlur(radius=3))
+                img_gau = img_ori.filter(MyGaussianBlur(radius=4))
                 img_gau.save('media/img/' + os.path.split(new_img.content.name)[-1] + 'gau.png')
                 gau.content = ImageFieldFile(gau, gau.content, 'img/' + os.path.split(new_img.content.name)[-1] + 'gau.png')
                 gau.save()
                 
+                now_user = IMG_User.objects.get(u_id = request.user.id)
+                if now_user.level > 4:
+                    con = IMG()
+                    con.name = new_img.name
+                    con.content = new_img.content
+                    con.author = new_img.author
+                    con.category = new_img.category
+                    con.origin = new_img.id
+                    con.is_ori = False
+                    con.is_con = True
+                    img_con = img_ori.filter(ImageFilter.CONTOUR)
+                    img_con.save('media/img/' + os.path.split(new_img.content.name)[-1] + 'con.png')
+                    con.content = ImageFieldFile(con, con.content, 'img/' + os.path.split(new_img.content.name)[-1] + 'con.png')
+                    con.save()
+            
             return HttpResponseRedirect('/')
     else:
         form = UploadForm()
     return render(request, 'upload.html', {'form': form})
 
-def search_img(request):
-    return render(request,'search.html')
-
 def process(request, number):
     pic = IMG.objects.filter(id=number)
-    return render(request, "process.html", {'pictures': pic})
+    pic_author = IMG_User.objects.get(u_id = request.user.id)
+    return render(request, "process.html", {'pictures': pic, 'pic_author':pic_author})
 
 def display(request, cate):
-    pictures = IMG.objects.filter(category=cate)
+    pic_user = IMG_User.objects.get(u_id = request.user.id)
+    pictures = IMG.objects.filter(category=cate, author = request.user)
     search_ori = True
     search_gra = True
     search_bin = True
     search_gau = True
     search_sca = True
     search_rot = True
+    search_con = True
     if request.method == 'POST':
         search_name = request.POST.get('searchname')
         if search_name:
@@ -143,9 +158,11 @@ def display(request, cate):
         search_gau = True if request.POST.get('inlineCheckbox4') else False
         search_sca = True if request.POST.get('inlineCheckbox5') else False
         search_rot = True if request.POST.get('inlineCheckbox6') else False
+        search_con = True if request.POST.get('inlineCheckbox7') else False
     return render(request, "display.html", {'pictures': pictures,
                   'search_ori': search_ori, 'search_gra': search_gra, 'search_bin': search_bin,
-                  'search_gau': search_gau, 'search_sca': search_sca, 'search_rot': search_rot})
+                  'search_gau': search_gau, 'search_sca': search_sca, 'search_rot': search_rot,
+                  'search_con': search_con, 'pic_user': pic_user})
 
 def gra(request, number):
     pic1 = IMG.objects.filter(origin = number, is_ori = True)
@@ -177,5 +194,110 @@ def rot(request, number):
     pic = list(chain(pic1, pic2))
     return render(request, "process.html", {'pictures': pic})
 
+def con(request, number):
+    pic1 = IMG.objects.filter(origin = number, is_ori = True)
+    pic2 = IMG.objects.filter(origin = number, is_con = True)
+    pic = list(chain(pic1, pic2))
+    return render(request, "process.html", {'pictures': pic})
 
+def square(request):
+    pictures = IMG.objects.order_by('-uploaded_at')[0:100]
+    pictures_top = IMG.objects.order_by('-liked_num')
+    return render(request, "square.html", {'pictures': pictures, 'pic0': pictures_top[0], 'pic1': pictures_top[1], 'pic2': pictures_top[2]})
+
+def like(request, pic_id):
+    if not request.user.is_authenticated():
+        return render(request, "login.html")
+    pic = IMG.objects.get(id = pic_id)
+    like = Like.objects.filter(fan = request.user, pic = pic)
+    star = IMG_User.objects.get(u_id = pic.author.id)
+    fan = IMG_User.objects.get(u_id = request.user.id)
+    if like:
+        pic.liked_num -= 1
+        pic.save()
+        like.delete()
+        star.liked_num -= 1
+        star.save()
+        fan.like_num -= 1
+        fan.save()
+        return redirect('square')
+    else:
+        pic.liked_num += 1
+        pic.save()
+        new_like = Like()
+        new_like.fan = request.user
+        new_like.pic = pic
+        new_like.save()
+        star.liked_num += 1
+        star.credit += 3
+        star.save()
+        star.level = (star.credit / 40) + 1
+        star.save()
+        star.storage = (star.level * 10) + 10
+        star.save()
+        fan.like_num += 1
+        fan.credit += 1
+        fan.save()
+        fan.level = (fan.credit / 40) + 1
+        fan.save()
+        fan.storage = (fan.level * 10) + 10
+        fan.save()
+        return redirect('square')
+
+def save(request, pic_id):
+    if not request.user.is_authenticated():
+        return render(request, "login.html")
+    pic = IMG.objects.get(id=pic_id)
+    star = IMG_User.objects.get(u_id = pic.author.id)
+    fan = IMG_User.objects.get(u_id = request.user.id)
+    if pic.author == request.user:
+        messages.warning(request, '这是您自己上传的图片！')
+    elif Save.objects.filter(fan = request.user, pic = pic):
+        messages.warning(request, '您已收藏过该图片！')
+    elif fan.storage <= fan.save_num:
+        messages.warning(request, '您的收藏夹已满！')
+    else:
+        pic.saved_num += 1
+        pic.save()
+        new_save = Save()
+        new_save.fan = request.user
+        new_save.pic = pic
+        new_save.save()
+        messages.info(request, '收藏成功！')
+        star.saved_num += 1
+        star.credit += 3
+        star.save()
+        star.level = (star.credit // 40) + 1
+        star.save()
+        star.storage = (star.level * 10) + 10
+        star.save()
+        fan.save_num += 1
+        fan.credit += 1
+        fan.save()
+        fan.level = (fan.credit // 40) + 1
+        fan.save()
+        fan.storage = (fan.level * 10) + 10
+        fan.save()
+    return redirect('square')
+
+def savelist(request):
+    if not request.user.is_authenticated():
+        return render(request, "login.html")
+    save_list = Save.objects.filter(fan=request.user)
+    m_user = IMG_User.objects.filter(u_id = request.user.id)
+    return render(request, "savelist.html", {'save_list':save_list, 'm_user':m_user})
+
+def unsave(request, pic_id):
+    pic = IMG.objects.get(id=pic_id)
+    star = IMG_User.objects.get(u_id = pic.author.id)
+    fan = IMG_User.objects.get(u_id = request.user.id)
+    pic.saved_num -= 1
+    pic.save()
+    star.saved_num -= 1
+    star.save()
+    fan.save_num -= 1
+    fan.save()
+    unsave = Save.objects.get(fan=request.user,pic=pic)
+    unsave.delete()
+    return redirect('savelist')
 

@@ -30,6 +30,11 @@
 		<label class="checkbox-inline">
 			<input type="checkbox" name="inlineCheckbox6" checked="checked" > 旋转
 		</label>
+		{% if pic_user.level > 4 %}
+		<label class="checkbox-inline">
+			<input type="checkbox" name="inlineCheckbox7" checked="checked" > 轮廓图
+		</label>
+		{% endif %}
     </div>
   </div>
  </form>
@@ -92,6 +97,17 @@
 		</div>
 	</div>
 	 {% elif pic.is_rot and search_rot %}
+	<div class="col-sm-4 col-md-4">
+		<div class="thumbnail" style = "width:300px">
+			<img src="{{ pic.content.url }}" >
+			<div class="caption">
+				<h3>{{pic.category}}</h3>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
+				<p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
+			</div>
+		</div>
+	</div>
+	{% elif pic.is_con and search_con %}
 	<div class="col-sm-4 col-md-4">
 		<div class="thumbnail" style = "width:300px">
 			<img src="{{ pic.content.url }}" >

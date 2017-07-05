@@ -11,12 +11,15 @@
 				<h3>{{pic.category}}</h3>
 				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
 				<p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
-				{% if pic.is_ori%}
+				{% if pic.is_ori %}
 					<a href="{% url 'gra' pic.id %}"><button type="submit" class="btn btn-primary">灰度图</button></a>
   					<a href="{% url 'bin' pic.id %}"><button type="submit" class="btn btn-success">二值化</button></a>
   					<a href="{% url 'gau' pic.id %}"><button type="submit" class="btn btn-info">高斯平滑</button></a>
   					<a href="{% url 'sca' pic.id %}"><button type="submit" class="btn btn-warning">图片缩放</button></a>
   					<a href="{% url 'rot' pic.id %}"><button type="submit" class="btn btn-danger">图片旋转</button></a>
+  					{% if pic_author.level > 4 %}
+  					<a href="{% url 'con' pic.id %}"><button type="submit" class="btn btn-default">轮廓图</button></a>
+  					{% endif %}
   				{% endif %}
 			</div>
 		</div>
