@@ -7,10 +7,10 @@
         {% csrf_token %}
         {% bootstrap_form_errors form %}
         {% bootstrap_form form %}
-        <div class="col-lg-10">
-            <input type="file" class="form-control" id="applyeruploadfile" name="applyeruploadfile" multiple="multiple">
-        </div>
-        {% buttons submit='上传' %}{% endbuttons %}
+		<h1></h1>
+        <input type="file" class="form-control" id="applyeruploadfile" name="applyeruploadfile" multiple="multiple">
+		<h4></h4>
+		<button type="submit" class="btn btn-default">上传</button>
     </form>
 </div>
 {% endblock %}

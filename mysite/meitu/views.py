@@ -16,6 +16,7 @@ from scipy import misc
 from PIL import Image, ImageFilter
 from django.db.models.fields.files import ImageFieldFile
 import skimage.io
+from django.contrib.auth.models import User
 
 def upload(request):
     if request.method == 'POST':
@@ -195,15 +196,32 @@ def rot(request, number):
     return render(request, "process.html", {'pictures': pic})
 
 def con(request, number):
-    pic1 = IMG.objects.filter(origin = number, is_ori = True)
-    pic2 = IMG.objects.filter(origin = number, is_con = True)
-    pic = list(chain(pic1, pic2))
-    return render(request, "process.html", {'pictures': pic})
+    operator = IMG_User.objects.get(u_id = request.user.id)
+    if operator.level < 5:
+        messages.info(request, '等级太低，不能进行此操作')
+        return redirect('process', number)
+    else:
+        pic1 = IMG.objects.filter(origin = number, is_ori = True)
+        pic2 = IMG.objects.filter(origin = number, is_con = True)
+        pic = list(chain(pic1, pic2))
+        return render(request, "process.html", {'pictures': pic})
 
 def square(request):
     pictures = IMG.objects.order_by('-uploaded_at')[0:100]
+    pic_list = []
+    for pic in pictures:
+        if Like.objects.filter(pic=pic,fan=request.user):
+            if Save.objects.filter(pic=pic,fan=request.user):
+                pic_list.append([pic, 11])
+            else:
+                pic_list.append([pic, 10])
+        else:
+            if Save.objects.filter(pic=pic,fan=request.user):
+                pic_list.append([pic, 1])
+            else:
+                pic_list.append([pic, 0])
     pictures_top = IMG.objects.order_by('-liked_num')
-    return render(request, "square.html", {'pictures': pictures, 'pic0': pictures_top[0], 'pic1': pictures_top[1], 'pic2': pictures_top[2]})
+    return render(request, "square.html", {'pic_list': pic_list, 'pic0': pictures_top[0], 'pic1': pictures_top[1], 'pic2': pictures_top[2]})
 
 def like(request, pic_id):
     if not request.user.is_authenticated():
@@ -220,6 +238,7 @@ def like(request, pic_id):
         star.save()
         fan.like_num -= 1
         fan.save()
+        messages.info(request, '取消成功')
         return redirect('square')
     else:
         pic.liked_num += 1
@@ -242,6 +261,7 @@ def like(request, pic_id):
         fan.save()
         fan.storage = (fan.level * 10) + 10
         fan.save()
+        messages.info(request, '点赞成功')
         return redirect('square')
 
 def save(request, pic_id):
@@ -250,10 +270,18 @@ def save(request, pic_id):
     pic = IMG.objects.get(id=pic_id)
     star = IMG_User.objects.get(u_id = pic.author.id)
     fan = IMG_User.objects.get(u_id = request.user.id)
+    unsave = Save.objects.get(fan=request.user,pic=pic)
     if pic.author == request.user:
         messages.warning(request, '这是您自己上传的图片！')
-    elif Save.objects.filter(fan = request.user, pic = pic):
-        messages.warning(request, '您已收藏过该图片！')
+    elif unsave:
+        pic.saved_num -= 1
+        pic.save()
+        star.saved_num -= 1
+        star.save()
+        fan.save_num -= 1
+        fan.save()
+        unsave.delete()
+        messages.info(request, '取消收藏成功！')
     elif fan.storage <= fan.save_num:
         messages.warning(request, '您的收藏夹已满！')
     else:
@@ -300,4 +328,18 @@ def unsave(request, pic_id):
     unsave = Save.objects.get(fan=request.user,pic=pic)
     unsave.delete()
     return redirect('savelist')
+
+def delpic(request, pic_id):
+    pic = IMG.objects.get(id=pic_id)
+    pic.delete()
+    messages.info(request, '删除成功！')
+    return redirect('index')
+
+def home(request, user_id):
+    author = User.objects.get(id=user_id)
+    if request.user == author:
+        return redirect('index')
+    pictures = IMG.objects.filter(author=author)
+    homename = author.username
+    return render(request, "home.html", {'pictures': pictures, 'homename':homename})
 

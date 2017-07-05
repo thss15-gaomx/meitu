@@ -6,27 +6,46 @@
 <p>{% bootstrap_icon 'thumbs-up' %}<b> 被点赞数：{{users.liked_num}}</b></p>
 <p>{% bootstrap_icon 'signal' %}<b> 等级：{{users.level}}</b></p>
 <p>{% bootstrap_icon 'usd' %}<b> 经验值：{{users.credit}}</b></p>
+{% include "messages.html" %}
+<h3>我的主页</h3>
+<h3></h3>
 <ul class="list-group">
     {% for v,k in cate_list %}
     <a href="{% url 'display' v %}" class="list-group-item">类别： {{v}}<span class="badge">{{k}}张</span></a>
-   
-       <div class="row">
-      {% for pic in pictures %}
-      {% if pic.category == v %}
-      <div class="col-sm-4 col-lg-4"  style = "height:380px">
-         <div class="thumbnail">
-            <a href="{% url 'process' pic.id %}"><img src="{{ pic.content.url }}" ></a>
-            <div class="caption">
-            <h3>{{pic.category}}</h3>
-               <p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
-               <p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
-            </div>
-         </div>
+      <div class="row">
+        {% for pic in pictures %}
+    {% if pic.category == v %}
+    <div class="col-sm-4 col-md-4" style="height:380px">
+      <div class="thumbnail">
+        <a href="{% url 'process' pic.id %}"><img src="{{ pic.content.url }}"></a>
+        <div class="caption">
+          <h3>{{pic.name}}</h3>
+          <p>{% bootstrap_icon 'time' %} {{pic.uploaded_at|date:"m-d H:i"}}</p>
+          <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#{{ pic.id }}">删除</button>
+        </div>
       </div>
-      {% endif %}
-      {% endfor %}
+    </div>
+    
+    <div class="modal fade" id="{{ pic.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+            &times;
+          </button>
+          <h4 class="modal-title" id="myModalLabel">确定删除</h4>
+        </div>
+        <div class="modal-body">您确定要删除该图片吗？</div>
+        <div class="modal-footer">
+          <a href="{% url 'delpic' pic.id %}"><button type="button" class="btn btn-danger">确定</button></a>
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        </div>
       </div>
-      
-   {% endfor %}
+    </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    </div>  
+  {% endfor %}
 </ul>
 {% endblock %}

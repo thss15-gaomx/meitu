@@ -3,24 +3,25 @@
 
 {% block content %}
 {% include 'messages.html' %}
+
 <div id="myCarousel" class="carousel slide">
     <ol class="carousel-indicators">
         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
         <li data-target="#myCarousel" data-slide-to="1"></li>
         <li data-target="#myCarousel" data-slide-to="2"></li>
     </ol>
-    <div class="carousel-inner" style="height:600px;margin-bottom:20px;">
+    <div class="carousel-inner" style="height:600px;margin-bottom:40px;">
         <div class="item active" style="height:600px">
             <img src="{{ pic0.content.url }}" alt="First slide" style="width:100%;height:100%" data-toggle="modal" data-target="#pic0">
-            <div class="carousel-caption">{{ pic0.name }}</div>
+            <div class="carousel-caption"><h3 align = "center">{{ pic0.name }}</h3>{% bootstrap_icon 'thumbs-up' %}：{{ pic0.liked_num }}</div>
         </div>
         <div class="item" style="height:600px">
             <img src="{{ pic1.content.url }}" alt="Second slide" style="width:100%;height:100%" data-toggle="modal" data-target="#pic1">
-            <div class="carousel-caption">{{ pic1.name }}</div>
+            <div class="carousel-caption"><h3 align = "center">{{ pic1.name }}</h3>{% bootstrap_icon 'thumbs-up' %}：{{ pic1.liked_num }}</div>
         </div>
         <div class="item" style="height:600px">
             <img src="{{ pic2.content.url }}" alt="Third slide" style="width:100%;height:100%" data-toggle="modal" data-target="#pic2">
-            <div class="carousel-caption">{{ pic2.name }}</div>
+            <div class="carousel-caption"><h3 align = "center">{{ pic2.name }}</h3>{% bootstrap_icon 'thumbs-up' %}：{{ pic2.liked_num }}</div>
         </div>
     </div>
     <a class="carousel-control left" href="#myCarousel" style="background: transparent;"
@@ -77,21 +78,36 @@
     </div>
 </div>
 
+<nav class="navbar navbar-default" role="navigation">
+   <div class="navbar-header">
+      <span class="navbar-brand"> 最新图片100张</span>
+   </div>
+ </nav>
 <div class="row">
-    {% for pic in pictures %}
+    {% for pic,flag in pic_list %}
     <div class="col-sm-3 col-md-2" style="height:370px">
         <div class="thumbnail">
             <img src="{{ pic.content.url }}" data-toggle="modal" data-target="#{{ pic.id }}">
             <div class="caption">
                 <h3>{{pic.name}}</h3>
                 <p>
-                {% bootstrap_icon 'user' %} <b>{{pic.author}}</b></br>
+                {% bootstrap_icon 'user' %} <a href="{% url 'home' pic.author.id %}"><b> {{pic.author}}</b></a>
                 {% bootstrap_icon 'heart' %}<b> {{pic.liked_num}}</b>
                 {% bootstrap_icon 'star' %}<b> {{pic.saved_num}}</b>
                 </p>
                 <p>{% bootstrap_icon 'time' %} {{pic.uploaded_at|date:"m-d H:i"}}</p>
-                <a href="{% url 'like' pic.id %}"><button type="submit" class="btn btn-primary">点赞</button></a>
-                <a href="{% url 'save' pic.id %}"><button type="submit" class="btn btn-default">收藏</button></a>
+                <span>
+                {% if flag == 11 or flag == 10%}
+                <a href="{% url 'like' pic.id %}"><button type="submit" class="btn btn-warning" >已赞</button></a>
+                {% else %}
+                <a href="{% url 'like' pic.id %}"><button type="submit" class="btn btn-primary" >点赞</button></a>
+                {% endif %}
+                {% if flag == 11 or flag == 1%}
+                <a href="{% url 'save' pic.id %}"><button type="submit" class="btn btn-success" >已收藏</button></a>
+                {% else %}
+                <a href="{% url 'save' pic.id %}"><button type="submit" class="btn btn-default" >收藏</button></a>
+                {% endif %}
+                </span>
             </div>
         </div>
     </div>

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load bootstrap3 %}
 {% block content %}
-
+{% include "messages.html" %}
 <div class="row">
   {% for pic in pictures %}
 	<div class="col-sm-12 col-md-12">
@@ -17,9 +17,7 @@
   					<a href="{% url 'gau' pic.id %}"><button type="submit" class="btn btn-info">高斯平滑</button></a>
   					<a href="{% url 'sca' pic.id %}"><button type="submit" class="btn btn-warning">图片缩放</button></a>
   					<a href="{% url 'rot' pic.id %}"><button type="submit" class="btn btn-danger">图片旋转</button></a>
-  					{% if pic_author.level > 4 %}
   					<a href="{% url 'con' pic.id %}"><button type="submit" class="btn btn-default">轮廓图</button></a>
-  					{% endif %}
   				{% endif %}
 			</div>
 		</div>

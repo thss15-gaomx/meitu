@@ -22,5 +22,7 @@ urlpatterns = [
     url(r'^save/([a-zA-Z0-9]*)$',views.save, name='save'),
     url(r'^unsave/([a-zA-Z0-9]*)$',views.unsave, name='unsave'),
     url(r'^savelist$', views.savelist, name='savelist'),
+    url(r'^delpic/([a-zA-Z0-9]*)$',views.delpic, name='delpic'),
+    url(r'^home/([0-9]*)$', views.home, name='home'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
