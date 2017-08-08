@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
 {% load bootstrap3 %}
 {% block content %}
+<link rel="stylesheet" href="http://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.css">
+<script src="http://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.js"></script>
 <h3>上传图片</h3>
 <div>
     <form method="post" action="{% url 'upload' %}" enctype="multipart/form-data">
         {% csrf_token %}
         {% bootstrap_form_errors form %}
+        <div class="ui pointing below red basic label">如不填写name，则文件名默认为“name” </div>
         {% bootstrap_form form %}
 		<h1></h1>
         <input type="file" class="form-control" id="applyeruploadfile" name="applyeruploadfile" multiple="multiple">

@@ -1,7 +1,7 @@
 import os
 from django.shortcuts import render
 from itertools import chain
-from .models import IMG, IMG_User, Like, Save, Invite
+from .models import IMG, IMG_User, Like, Save, Invite, Remark
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -128,7 +128,21 @@ def upload(request):
                     img_con.save('media/img/' + os.path.split(new_img.content.name)[-1] + 'con.png')
                     con.content = ImageFieldFile(con, con.content, 'img/' + os.path.split(new_img.content.name)[-1] + 'con.png')
                     con.save()
-            
+        
+                if now_user.level > 9:
+                    emb = IMG()
+                    emb.name = new_img.name
+                    emb.content = new_img.content
+                    emb.author = new_img.author
+                    emb.category = new_img.category
+                    emb.origin = new_img.id
+                    emb.is_ori = False
+                    emb.is_emb = True
+                    img_emb = img_ori.filter(ImageFilter.EMBOSS)
+                    img_emb.save('media/img/' + os.path.split(new_img.content.name)[-1] + 'emb.png')
+                    emb.content = ImageFieldFile(emb, emb.content, 'img/' + os.path.split(new_img.content.name)[-1] + 'emb.png')
+                    emb.save()
+
             return HttpResponseRedirect('/')
     else:
         form = UploadForm()
@@ -149,6 +163,7 @@ def display(request, cate):
     search_sca = True
     search_rot = True
     search_con = True
+    search_emb = True
     if request.method == 'POST':
         search_name = request.POST.get('searchname')
         if search_name:
@@ -160,10 +175,11 @@ def display(request, cate):
         search_sca = True if request.POST.get('inlineCheckbox5') else False
         search_rot = True if request.POST.get('inlineCheckbox6') else False
         search_con = True if request.POST.get('inlineCheckbox7') else False
+        search_emb = True if request.POST.get('inlineCheckbox8') else False
     return render(request, "display.html", {'pictures': pictures,
                   'search_ori': search_ori, 'search_gra': search_gra, 'search_bin': search_bin,
                   'search_gau': search_gau, 'search_sca': search_sca, 'search_rot': search_rot,
-                  'search_con': search_con, 'pic_user': pic_user})
+                  'search_con': search_con, 'search_emb': search_emb,'pic_user': pic_user})
 
 def gra(request, number):
     pic1 = IMG.objects.filter(origin = number, is_ori = True)
@@ -206,20 +222,34 @@ def con(request, number):
         pic = list(chain(pic1, pic2))
         return render(request, "process.html", {'pictures': pic})
 
+def emb(request, number):
+    operator = IMG_User.objects.get(u_id = request.user.id)
+    if operator.level < 10:
+        messages.info(request, '等级太低，不能进行此操作')
+        return redirect('process', number)
+    else:
+        pic1 = IMG.objects.filter(origin = number, is_ori = True)
+        pic2 = IMG.objects.filter(origin = number, is_emb = True)
+        pic = list(chain(pic1, pic2))
+        return render(request, "process.html", {'pictures': pic})
+
 def square(request):
     pictures = IMG.objects.order_by('-uploaded_at')[0:100]
     pic_list = []
     for pic in pictures:
-        if Like.objects.filter(pic=pic,fan=request.user):
-            if Save.objects.filter(pic=pic,fan=request.user):
-                pic_list.append([pic, 11])
+        if request.user.is_authenticated():
+            if Like.objects.filter(pic=pic,fan=request.user):
+                if Save.objects.filter(pic=pic,fan=request.user):
+                    pic_list.append([pic, 11])
+                else:
+                    pic_list.append([pic, 10])
             else:
-                pic_list.append([pic, 10])
+                if Save.objects.filter(pic=pic,fan=request.user):
+                    pic_list.append([pic, 1])
+                else:
+                        pic_list.append([pic, 0])
         else:
-            if Save.objects.filter(pic=pic,fan=request.user):
-                pic_list.append([pic, 1])
-            else:
-                pic_list.append([pic, 0])
+            pic_list.append([pic, 0])
     pictures_top = IMG.objects.order_by('-liked_num')
     return render(request, "square.html", {'pic_list': pic_list, 'pic0': pictures_top[0], 'pic1': pictures_top[1], 'pic2': pictures_top[2]})
 
@@ -270,16 +300,16 @@ def save(request, pic_id):
     pic = IMG.objects.get(id=pic_id)
     star = IMG_User.objects.get(u_id = pic.author.id)
     fan = IMG_User.objects.get(u_id = request.user.id)
-    unsave = Save.objects.get(fan=request.user,pic=pic)
     if pic.author == request.user:
         messages.warning(request, '这是您自己上传的图片！')
-    elif unsave:
+    elif Save.objects.filter(fan=request.user,pic=pic):
         pic.saved_num -= 1
         pic.save()
         star.saved_num -= 1
         star.save()
         fan.save_num -= 1
         fan.save()
+        unsave = Save.objects.get(fan=request.user,pic=pic)
         unsave.delete()
         messages.info(request, '取消收藏成功！')
     elif fan.storage <= fan.save_num:
@@ -339,7 +369,36 @@ def home(request, user_id):
     author = User.objects.get(id=user_id)
     if request.user == author:
         return redirect('index')
-    pictures = IMG.objects.filter(author=author)
+    cates = set()
+    for c in IMG.objects.filter(author=author):
+        cates.add(c.category)
+    cate_list = []
+    for key in cates:
+        pictures = IMG.objects.filter(author=author, category=key)
+        cate_list.append([key, pictures])
     homename = author.username
-    return render(request, "home.html", {'pictures': pictures, 'homename':homename})
+    return render(request, "home.html", {'cate_list': cate_list, 'homename':homename})
+
+def comment(request, id):
+    if not request.user.is_authenticated():
+        return render(request, "login.html")
+    pic = IMG.objects.get(id = id)
+    comment_list = Remark.objects.filter(pic = pic)
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        c = Remark(remarker = request.user, content = content, pic = pic)
+        c.save()
+        now_fan = IMG_User.objects.get(u_id = request.user.id)
+        now_star = IMG_User.objects.get(u_id = pic.author.id)
+        now_star.credit += 1
+        if not now_fan == now_star:
+            now_fan.credit += 1
+        now_fan.save()
+        now_star.save()
+        messages.info(request, '评论成功！')
+    return render(request, "remark.html", {'comment_list':comment_list, 'pic': pic})
+
+
+
+
 

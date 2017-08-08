@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% block content %}
+{% include "messages.html" %}
+<link rel="stylesheet" href="http://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.css">
+<script src="http://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.js"></script>
+
+<form method="post" action="{% url 'comment' pic.id %}">
+{% csrf_token %}
+<div class="ui comments" style="border:none">
+   {% for comment in comment_list %}
+    <div class="comment">
+        <div class = "content">
+        	<a href="{% url 'home' pic.author.id %}"class="author">{{comment.remarker}}</a>
+        	<div class="metadata">
+        		<div class = "date">{{comment.remark_at}}</div>
+        	</div>
+        	<p class = "text" style="font-family:'Raleway', sans-serif;">{{comment.content}}</p>
+        </div>
+	</div>
+   {% endfor %}
+
+{% if user.is_authenticated %}
+ 	<div class="panel panel-default">
+ 	<div class="panel-heading">创建评论</div>
+  	 <div class="panel-body">
+      <div class="form-group">
+         <input type="text" id="content" name="content" class="form-control" placeholder=" 评论" required />
+      </div>
+      <div class="pull-right">
+      <button type="submit" class="ui blue labeled submit icon button"><i class="icon edit"></i> 发表</button>
+      </div>
+      </div>
+</div>
+</div>
+{% endif %}
+{% endblock %}

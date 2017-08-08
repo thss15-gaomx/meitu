@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^sca/([a-zA-Z0-9]*)$',views.sca,name='sca'),
     url(r'^rot/([a-zA-Z0-9]*)$',views.rot,name='rot'),
     url(r'^con/([a-zA-Z0-9]*)$',views.con,name='con'),
+    url(r'^emb/([a-zA-Z0-9]*)$',views.emb,name='emb'),
     url(r'^process/([a-zA-Z0-9]*)$', views.process, name='process'),
     url(r'^display/([\s\S]*)$', views.display, name='display'),
     url(r'^square$', views.square, name='square'),
@@ -24,5 +25,6 @@ urlpatterns = [
     url(r'^savelist$', views.savelist, name='savelist'),
     url(r'^delpic/([a-zA-Z0-9]*)$',views.delpic, name='delpic'),
     url(r'^home/([0-9]*)$', views.home, name='home'),
+    url(r'^comment/([a-zA-Z0-9]*)$',views.comment, name='comment'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

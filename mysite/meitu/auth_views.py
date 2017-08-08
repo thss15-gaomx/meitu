@@ -13,12 +13,9 @@ def index(request):
     cates = set()
     for c in pictures:
         cates.add(c.category)
-    counter = {}.fromkeys(cates,0)
-    for c in pictures:
-        counter[c.category]+=1
     cate_list = []
-    for key in counter:
-        cate_list.append([key,counter[key]])
+    for key in cates:
+        cate_list.append([key,IMG.objects.filter(author=request.user, category=key)])
     cate_list.sort(reverse=True)
     return render(request, "index.html", {'pictures': pictures, 'cate_list':cate_list, 'users':users})
 
@@ -49,7 +46,8 @@ def signup_submit(request):
        m_user = IMG_User()
        m_user.u_id = user.id
        m_user.save()
-       return redirect('login')
+       auth.login(request, user)
+       return HttpResponseRedirect('/')
     except:
        return redirect('signup')
 

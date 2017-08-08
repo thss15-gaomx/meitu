@@ -11,7 +11,7 @@
 		<button type="submit" class="btn btn-default ">搜索</button>
 	</div>
 	<div>
-        <label for="name">图片类型</label>
+        <label for="name">图片类型</label>  
 	    <label class="checkbox-inline">
 		    <input type="checkbox" name="inlineCheckbox1" checked="checked" > 原图
 	    </label>
@@ -35,6 +35,11 @@
 			<input type="checkbox" name="inlineCheckbox7" checked="checked" > 轮廓图
 		</label>
 		{% endif %}
+		{% if pic_user.level > 9 %}
+		<label class="checkbox-inline">
+			<input type="checkbox" name="inlineCheckbox8" checked="checked" > 浮雕图
+		</label>
+		{% endif %}
     </div>
   </div>
  </form>
@@ -43,75 +48,85 @@
      {% for pic in pictures %}
 	 {% if pic.is_ori and search_ori %}
 	 <div class="col-sm-4 col-md-4">
-		<div class="thumbnail" style = "width:300px">
-			<img src="{{ pic.content.url }}" >
+		<div class="thumbnail">
+			<div style="height:300px;overflow:hidden"><img src="{{ pic.content.url }}" ></div>
 			<div class="caption">
-				<p>{% bootstrap_icon 'tag' %}<b>{{pic.category}}</b></p>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
 				<p>{% bootstrap_icon 'time' %} {{pic.uploaded_at|date:"m-d H:i"}}</p>
 			</div>
 		</div>
 	</div>
 	 {% elif pic.is_gra and search_gra %}
 	 <div class="col-sm-4 col-md-4">
-		<div class="thumbnail" style = "width:300px">
-			<img src="{{ pic.content.url }}" >
+		<div class="thumbnail">
+			<div style="height:300px;overflow:hidden"><img src="{{ pic.content.url }}" ></div>
 			<div class="caption">
-				<p>{% bootstrap_icon 'tag' %}<b>{{pic.category}}</b></p>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
 				<p>{% bootstrap_icon 'time' %} {{pic.uploaded_at|date:"m-d H:i"}}</p>
 			</div>
 		</div>
 	</div>
 	 {% elif pic.is_bin and search_bin %}
 	<div class="col-sm-4 col-md-4">
-		<div class="thumbnail" style = "width:300px">
-			<img src="{{ pic.content.url }}" >
+		<div class="thumbnail">
+			<div style="height:300px;overflow:hidden"><img src="{{ pic.content.url }}" ></div>
 			<div class="caption">
-				<p>{% bootstrap_icon 'tag' %}<b>{{pic.category}}</b></p>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
 				<p>{% bootstrap_icon 'time' %} {{pic.uploaded_at|date:"m-d H:i"}}</p>
 			</div>
 		</div>
 	</div>
 	 {% elif pic.is_gau and search_gau %}
 	<div class="col-sm-4 col-md-4">
-		<div class="thumbnail" style = "width:300px">
-			<img src="{{ pic.content.url }}" >
+		<div class="thumbnail">
+			<div style="height:300px;overflow:hidden"><img src="{{ pic.content.url }}" ></div>
 			<div class="caption">
-				<p>{% bootstrap_icon 'tag' %}<b>{{pic.category}}</b></p>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
 				<p>{% bootstrap_icon 'time' %} {{pic.uploaded_at|date:"m-d H:i"}}</p>
 			</div>
 		</div>
 	</div>
 	 {% elif pic.is_sca and search_sca %}
 	<div class="col-sm-4 col-md-4">
-		<div class="thumbnail" style = "width:300px">
-			<img src="{{ pic.content.url }}" >
+		<div class="thumbnail">
+			<div style="height:300px;overflow:hidden"><img src="{{ pic.content.url }}" ></div>
 			<div class="caption">
-				<p>{% bootstrap_icon 'tag' %}<b>{{pic.category}}</b></p>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
 				<p>{% bootstrap_icon 'time' %} {{pic.uploaded_at|date:"m-d H:i"}}</p>
 			</div>
 		</div>
 	</div>
 	 {% elif pic.is_rot and search_rot %}
 	<div class="col-sm-4 col-md-4">
-		<div class="thumbnail" style = "width:300px">
-			<img src="{{ pic.content.url }}" >
+		<div class="thumbnail">
+			<div style="height:300px;overflow:hidden"><img src="{{ pic.content.url }}" ></div>
 			<div class="caption">
-				<p>{% bootstrap_icon 'tag' %}<b>{{pic.category}}</b></p>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
 				<p>{% bootstrap_icon 'time' %} {{pic.uploaded_at|date:"m-d H:i"}}</p>
 			</div>
 		</div>
 	</div>
 	{% elif pic.is_con and search_con %}
 	<div class="col-sm-4 col-md-4">
-		<div class="thumbnail" style = "width:300px">
-			<img src="{{ pic.content.url }}" >
+		<div class="thumbnail">
+			<div style="height:300px;overflow:hidden"><img src="{{ pic.content.url }}" ></div>
 			<div class="caption">
-				<p>{% bootstrap_icon 'tag' %}<b>{{pic.category}}</b></p>
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
 				<p>{% bootstrap_icon 'time' %} {{pic.uploaded_at|date:"m-d H:i"}}</p>
 			</div>
 		</div>
 	</div>
-	{% endif %} 
+	{% elif pic.is_emb and search_emb %}
+	<div class="col-sm-4 col-md-4">
+		<div class="thumbnail">
+			<div style="height:300px;overflow:hidden"><img src="{{ pic.content.url }}" ></div>
+			<div class="caption">
+				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
+				<p>{% bootstrap_icon 'time' %} {{pic.uploaded_at|date:"m-d H:i"}}</p>
+			</div>
+		</div>
+	</div>
+	{% endif %}
 	{% endfor %}
 </div>
 {% endblock %}

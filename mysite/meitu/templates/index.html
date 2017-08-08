@@ -2,26 +2,44 @@
 {% load bootstrap3 %}
 
 {% block content %}
-<p>{% bootstrap_icon 'paperclip' %}<b> 被收藏数：{{users.saved_num}}</b></p>
-<p>{% bootstrap_icon 'thumbs-up' %}<b> 被点赞数：{{users.liked_num}}</b></p>
-<p>{% bootstrap_icon 'signal' %}<b> 等级：{{users.level}}</b></p>
-<p>{% bootstrap_icon 'usd' %}<b> 经验值：{{users.credit}}</b></p>
-{% include "messages.html" %}
+<link rel="stylesheet" href="http://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.css">
+<script src="http://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.js"></script>
 <h3>我的主页</h3>
-<h3></h3>
-<ul class="list-group">
-    {% for v,k in cate_list %}
-    <a href="{% url 'display' v %}" class="list-group-item">类别： {{v}}<span class="badge">{{k}}张</span></a>
-      <div class="row">
+
+<h5 class="text-right"><small>
+  <span class="glyphicon glyphicon-bookmark"></span> 被收藏数：{{users.saved_num}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-up"></span> 被点赞数：{{users.liked_num}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <span class="glyphicon glyphicon-signal"></span> 等级：{{users.level}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-usd"></span>经验值：{{users.credit}}
+</small></h5>
+
+{% include "messages.html" %}
+<div class="row">
+  {% if cate_list|length %}
+  <div class="col-md-2" >
+  <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="150">
+    <li class="active"><a href="#">类别导航</a></li>
+    {% for v,pictures in cate_list %}
+    <li><a href="#section{{v}}">{{v}} </a></li>
+    {% endfor %}
+  </ul>
+  </div>
+  {% endif %}
+
+<div class="col-md-10">
+ {% for v,pictures in cate_list %}
+  <div class="panel panel-info" id="section{{v}}">
+     <div class="panel-heading" data-toggle="collapse" data-target="#{{v}}" data-toggle="tooltip" data-placement="top" title="点击收起"><a href="{% url 'display' v %}">类别： {{v}}</a>
+   <span class="badge pull-right" >{{pictures|length}}张</span>
+   </div>
+    <div class="panel-body" id="{{v}}" class="collapse" style="overflow-y:scroll; height:400px">
         {% for pic in pictures %}
-    {% if pic.category == v %}
-    <div class="col-sm-4 col-md-4" style="height:380px">
+    <div class="col-sm-4 col-md-4">
       <div class="thumbnail">
-        <a href="{% url 'process' pic.id %}"><img src="{{ pic.content.url }}"></a>
+        <div style="height:250px;overflow:hidden"><a href="{% url 'process' pic.id %}"><img src="{{ pic.content.url }}" class="img-responsive"></a></div>
         <div class="caption">
           <h3>{{pic.name}}</h3>
           <p>{% bootstrap_icon 'time' %} {{pic.uploaded_at|date:"m-d H:i"}}</p>
-          <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#{{ pic.id }}">删除</button>
+          <a href="{% url 'comment' pic.id %}"><button class="ui black button">评论</button></a>
+          <button class="ui red button" data-toggle="modal" data-target="#{{ pic.id }}">删除</button>         
         </div>
       </div>
     </div>
@@ -39,13 +57,14 @@
         <div class="modal-footer">
           <a href="{% url 'delpic' pic.id %}"><button type="button" class="btn btn-danger">确定</button></a>
           <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-        </div>
+                </div>
       </div>
     </div>
     </div>
-    {% endif %}
-    {% endfor %}
+    {% endfor %} 
     </div>  
+  </div>
   {% endfor %}
-</ul>
+</div>  
+</div>
 {% endblock %}

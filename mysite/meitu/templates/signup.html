@@ -1,18 +1,24 @@
 {% extends 'base.html' %}
 {% block content%}
-<h3>注册</h3>
+<link rel="stylesheet" href="http://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.css">
+<script src="http://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.js"></script>
 <div>
    <form method="post" action="{% url 'signup-submit' %}">
       {% csrf_token %}
-      <div class="form-group">
-         <label for="username">用户名</label>
-         <input type="text" id="username" name="username" class="form-control" placeholder="Username" required/>
+         <div class="ui form">
+             <div class="ui center aligned basic segment">
+               <label>Username</label>
+               <div class="ui left icon input">
+               <input type="text" id="username" name="username" class="form-control" placeholder="Username" required />
+               <i class="user icon"></i>
+            </div></br></br>
+            <label>Password</label>
+            <div class="ui left icon input">
+            <input type="password" id="password" name="password" class="form-control" placeholder="Password" required />
+            <i class="lock icon"></i>
+         </div></br></br>
+         <button type="submit" class="btn btn-success btn-lg">Sign up</button></br></br>
       </div>
-      <div class="form-group">
-         <label for="password">密码</label>
-         <input type="password" id="password" name="password" class="form-control" placeholder="Password" required/>
-      </div>
-      <button type="submit" class="btn btn-primary">注册</button>
    </form>
 </div>
 {% endblock %}

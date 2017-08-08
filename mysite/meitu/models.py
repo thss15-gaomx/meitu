@@ -18,6 +18,7 @@ class IMG(models.Model):
     is_sca = models.BooleanField(default=False)#是否缩放
     is_rot = models.BooleanField(default=False)#是否旋转
     is_con = models.BooleanField(default=False)#是否提取轮廓
+    is_emb = models.BooleanField(default=False)#是否浮雕
 
 class Like(models.Model):
     fan = models.ForeignKey('auth.User', null = True)
@@ -43,3 +44,13 @@ class IMG_User(models.Model):
     save_num = models.IntegerField(default = 0)
     invite_num = models.IntegerField(default = 0)
     admin = models.BooleanField(default = False)
+
+class Remark(models.Model):
+    remarker = models.ForeignKey('auth.User', null = True)
+    pic = models.ForeignKey(IMG, null = True)
+    content = models.TextField(max_length=250)
+    parent_comment_id = models.IntegerField(default = 0)
+    remark_at=models.DateTimeField(default=timezone.now)
+
+    def _str_(self):
+        return self.remarker.username + ':' + self.content

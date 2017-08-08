@@ -2,26 +2,32 @@
 {% load bootstrap3 %}
 {% block content %}
 {% include "messages.html" %}
+<link rel="stylesheet" href="http://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.css">
+<script src="http://cdn.bootcss.com/semantic-ui/2.1.8/semantic.min.js"></script>
 <div class="row">
   {% for pic in pictures %}
 	<div class="col-sm-12 col-md-12">
 		<div class="thumbnail">
-			<img src="{{ pic.content.url }}" >
-			<div class="caption">	
-				<h3>{{pic.category}}</h3>
-				<p>{% bootstrap_icon 'tag' %}<b>{{pic.name}}</b></p>
-				<p>{% bootstrap_icon 'user' %}<b>{{pic.author}}</b></p>
+				<h2 class="ui header">
+				<i class="photo icon"></i>
+  				<div class="content">{{pic.category}} <div class="sub header">{{pic.name}} by {{pic.author}}</div>
+  				</div>
+				</h2>
+				<img src="{{ pic.content.url }}" >
+
 				{% if pic.is_ori %}
-					<a href="{% url 'gra' pic.id %}"><button type="submit" class="btn btn-primary">灰度图</button></a>
-  					<a href="{% url 'bin' pic.id %}"><button type="submit" class="btn btn-success">二值化</button></a>
-  					<a href="{% url 'gau' pic.id %}"><button type="submit" class="btn btn-info">高斯平滑</button></a>
-  					<a href="{% url 'sca' pic.id %}"><button type="submit" class="btn btn-warning">图片缩放</button></a>
-  					<a href="{% url 'rot' pic.id %}"><button type="submit" class="btn btn-danger">图片旋转</button></a>
-  					<a href="{% url 'con' pic.id %}"><button type="submit" class="btn btn-default">轮廓图</button></a>
+				<div class="ui inverted segment">
+  						<a href="{% url 'gra' pic.id %}"><button class="ui inverted basic button"> 灰度图</button></a>
+  						<a href="{% url 'bin' pic.id %}"><button class="ui inverted red basic button"> 二值化</button></a>
+  						<a href="{% url 'gau' pic.id %}"><button class="ui inverted orange basic button"> 高斯平滑</button></a>
+  						<a href="{% url 'sca' pic.id %}"><button class="ui inverted yellow basic button"> 图片缩放</button></a>
+  						<a href="{% url 'rot' pic.id %}"><button class="ui inverted olive basic button"> 图片旋转</button></a>
+  						<a href="{% url 'con' pic.id %}"><button class="ui inverted teal basic button"> 轮廓图</button></a>
+  						<a href="{% url 'emb' pic.id %}"><button class="ui inverted blue basic button"> 浮雕图</button></a>
+  	   </div>
   				{% endif %}
 			</div>
 		</div>
-	</div>
 	{% endfor %}
 </div>
 {% endblock %}

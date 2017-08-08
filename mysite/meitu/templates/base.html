@@ -18,6 +18,7 @@
    <div>
    <ul class="nav navbar-nav navbar-right">
         <li role="presentation"><a href="{% url 'square' %}"><span class="glyphicon glyphicon-map-marker"></span> 广场</a></li>
+        <li role="presentation"><a href="{% url 'square' %}"><span class="glyphicon glyphicon-search"></span> 帮助</a></li>
          {% if user.is_authenticated %}
          <li class="dropdown">
       <a href="{% url 'index' %}" class="dropdown-toggle dropdown-inverse" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> 我(<b>{{user.username}}</b>)</a>
@@ -31,7 +32,6 @@
            </li>
       {% else %}
           <li role="presentation"><a href="{% url 'login' %}"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
-      <li role="presentation"><a href="{% url 'signup' %}"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
           {% endif %}
     </ul>
    </div>
@@ -40,8 +40,9 @@
         <section id="content">
             {% block content %}{% endblock %}
         </section>
+         <hr class="featurette-divider">
         <footer class="footer">
-            <p>&copy; 2017 美图看看</p>
+            <p>&copy; All Rights Reserved</p>
         </footer>
     </div>
 </body>
